@@ -19,17 +19,22 @@ async function runExample() {
   // Format the output value
   outputData = parseFloat(outputData[0]).toFixed(2);
 
-  // Display the output value
+  // Display the output value in the predictions box
   let predictions = document.getElementById('predictions');
   predictions.innerHTML = ` <hr> Got an output tensor with values: <br/>
-   <table>
-     <tr>
-       <td>  Rating of Air Quality  </td>
-       <td id="td0">  ${outputData}  </td>
-     </tr>
-  </table>`;
+    <table>
+      <tr>
+        <td>  Rating of Air Quality  </td>
+        <td id="td0">  ${outputData}  </td>
+      </tr>
+    </table>`;
 
-  // Change the background color based on the output value
+  // Change the background color based on the output value for predictions box
   var boxColor = getBoxColor(outputData);
   predictions.style.backgroundColor = boxColor;
+
+  // Display the predicted AQI in a separate box with background color
+  let predictedAQI = document.getElementById('predictedAQI');
+  predictedAQI.innerHTML = ` <hr> Predicted AQI: ${outputData} </hr>`;
+  predictedAQI.style.backgroundColor = boxColor;
 }
