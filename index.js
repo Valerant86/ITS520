@@ -11,7 +11,7 @@
       let feeds = { float_input: tensorX };
 
       // Load the ONNX model
-      let session = await ort.InferenceSession.create('xgboost_Classification_AirQuality_ort.onnx');
+      let session = await ort.InferenceSession.create('xgboost_AirQuality_ort');
 
       // Run the model and get the result
       let result = await session.run(feeds);
