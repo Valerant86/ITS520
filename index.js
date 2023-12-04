@@ -1,49 +1,55 @@
-// predict.js
-async function predict() {
-    const inputValue = parseFloat(document.getElementById("inputValue").value);
+ async function runExample() {
+      // Fetch values from input boxes
+      var x = new Float32Array(12);
+      for (let i = 1; i <= 12; i++) {
+        x[i - 1] = parseFloat(document.getElementById(`box${i}`).value);
+      }
 
-    // Load the ONNX model
-    const model = await onnx.load('xgboost_Classification_AirQuality_ort.onnx');
-    console.log('Model loaded successfully');
+      // Create the input tensor
+      let tensorX = new ort.Tensor('float32', x, [1, 12]);
+      let feeds = { float_input: tensorX };
 
-    // Create an ONNX inference session
-    const session = new onnx.InferenceSession({ backendHint: "webgl" });
-    await session.loadModel(model);
+      // Load the ONNX model
+      let session = await ort.InferenceSession.create('xgboost_AirQuality_ort.onnx');
 
-    // Prepare input tensor
-    const tensorArray = new Float32Array([inputValue]);
-    const tensor = new onnx.Tensor(tensorArray, "float32", [1, 1]);
+      // Run the model and get the result
+      let result = await session.run(feeds);
+      let outputData = result.variable.data;
 
-    // Run the model
-    const outputMap = await session.run([tensor]);
+      // Format the output value
+      outputData = parseFloat(outputData).toFixed(2);
 
-    // Get the predicted result
-    const prediction = outputMap.values().next().value.data[0];
-    console.log('Prediction:', prediction);
+      // Display the output value
+      let predictions = document.getElementById('predictions');
+      predictions.innerHTML = ` <hr> Got an output tensor with values: <br/>
+       <table>
+         <tr>
+           <td>  Rating of Air Quality  </td>
+           <td id="td0">  ${outputData}  </td>
+         </tr>
+      </table>`;
 
-    // Display the prediction
-    const resultElement = document.getElementById("predictionResult");
-    resultElement.textContent = `Prediction: ${prediction}`;
-
-    // Change the background color based on the output value
-    const predictions = document.getElementById("predictions");
-    const boxColor = getBoxColor(prediction);
-    predictions.style.backgroundColor = boxColor;
-}
-
-function getBoxColor(aqi) {
-    // Customize this logic based on your desired color assignment
-    if (aqi <= 50) {
-        return "green"; // Good
-    } else if (aqi <= 100) {
-        return "yellow"; // Moderate
-    } else if (aqi <= 150) {
-        return "orange"; // Unhealthy for sensitive groups
-    } else if (aqi <= 200) {
-        return "red"; // Unhealthy
-    } else if (aqi <= 300) {
-        return "purple"; // Very Unhealthy
-    } else {
-        return "maroon"; // Hazardous
+      // Change the background color based on the output value
+      var boxColor = getBoxColor(outputData);
+      predictions.style.backgroundColor = boxColor;
     }
-}
+
+    function getBoxColor(aqi) {
+
+      if (aqi <= 50) {
+        return "green"; // Good
+      } else if (aqi <= 100) {
+        return "yellow"; // Moderate
+      } else if (aqi <= 150) {
+        return "orange"; // Unhealthy for sensitive groups
+      } else if (aqi <= 200) {
+        return "red"; // Unhealthy
+      } else if (aqi <= 300) {
+        return "purple"; // Very Unhealthy
+      } else {
+        return "maroon"; // Hazardous
+      }
+    }
+  </script>
+</body>
+</html>
