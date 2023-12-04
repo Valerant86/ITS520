@@ -4,8 +4,8 @@ async function initializeAndRunExample() {
     const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
 
     try {
-        // Load the ONNX model using a URL
-        const onnxModel = await ort.InferenceSession.create({ backendHint: 'webgl' });
+        // Load the ONNX model using a URL with the ONNX Runtime Web Bundle
+        const onnxModel = await ort.InferenceSession.create();
         await onnxModel.loadModel(`./${onnxModelFileName}`);
 
         // Extract input and output names
@@ -16,7 +16,6 @@ async function initializeAndRunExample() {
         function collectInputValues() {
             const inputValues = {};
 
-            // Replace with your actual input ids
             const inputIds = [
                 'box1', 'box2', 'box3', 'box4', 'box5', 'box6',
                 'box7', 'box8', 'box9', 'box10', 'box11', 'box12'
@@ -32,32 +31,4 @@ async function initializeAndRunExample() {
 
         // Function to update predictions when the button is clicked
         window.runExample = async function () {
-            // Collect input values from text boxes
-            const inputValues = collectInputValues();
-
-            // Prepare the input data for ONNX model
-            const inputData = new Float32Array(Object.values(inputValues));
-
-            // Create an ONNX Tensor from the input data
-            const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [1, Object.keys(inputValues).length]);
-
-            // Run the ONNX model to get predictions
-            const outputTensor = await onnxModel.run([outputName], { [inputName]: inputTensor });
-
-            // Get the prediction result
-            const predictionResult = outputTensor.getValues();
-
-            // Display the prediction result
-            document.getElementById('predictions').textContent = `Predicted AQI: ${predictionResult[0].toFixed(2)}`;
-        };
-
-        // Update the model status on the HTML page
-        document.getElementById('modelLoaded').textContent = 'Yes';
-    } catch (error) {
-        console.error('Error loading the ONNX model:', error);
-        document.getElementById('modelLoaded').textContent = 'No';
-    }
-}
-
-// Call the initialization function
-initializeAndRunExample();
+       
