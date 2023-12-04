@@ -35,7 +35,7 @@ async function updatePrediction() {
     const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [1, headersList.length]);
 
     // Run the ONNX model to get predictions
-    const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
+    const outputTensor = await onnxModel.run([labelName], { [inputName]: inputTensor });
 
     // Get the prediction result
     const predictionResult = outputTensor.getValues();
@@ -63,3 +63,6 @@ await onnxModel.loadModel(`./${onnxModelFileName}`);
 // Extract input and output names
 const inputName = onnxModel.inputNames[0];
 const labelName = onnxModel.outputNames[0];
+
+// Update the model status on the HTML page
+document.getElementById('modelLoaded').textContent = 'Yes';
