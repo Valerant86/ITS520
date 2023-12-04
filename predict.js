@@ -1,57 +1,50 @@
-// predict.js
-let model, session;
+// Load ONNX runtime module
+const ort = require('onnxruntime-web');
 
-async function loadModel() {
-    model = await onnx.load('xgboost_Classification_AirQuality_ort.onnx');
-    session = new onnx.InferenceSession({ backendHint: 'webgl' });
-    await session.loadModel(model);
-    console.log('Model loaded successfully');
-}
+// Function to update predictions when the header is changed
+async function updatePrediction() {
+    // Get the selected header value
+    const selectedHeader = document.getElementById('headerSelect').value;
 
-async function predict() {
-    const inputValue = parseFloat(document.getElementById("inputValue").value);
-
-    if (!model || !session) {
-        await loadModel();
+    // Make sure the selected header is valid
+    if (!selectedHeader) {
+        alert('Please select a valid header.');
+        return;
     }
 
-    // Prepare input tensor
-    const tensorArray = new Float32Array([inputValue]);
-    const tensor = new onnx.Tensor(tensorArray, 'float32', [1, 1]);
+    // Get the index of the selected header
+    const headerIndex = headersList.indexOf(selectedHeader);
 
-    // Run the model
-    const outputMap = await session.run([tensor]);
+    // Extract the corresponding column from the test data
+    const testDataColumn = X_test_tr[:, headerIndex];
 
-    // Get the predicted result
-    const prediction = outputMap.values().next().value.data[0];
-    console.log('Prediction:', prediction);
+    // Prepare the input data for ONNX model
+    const inputData = new Float32Array(testDataColumn.data);
 
-    // Display the prediction
-    const resultElement = document.getElementById("predictionResult");
-    resultElement.textContent = `Prediction: ${prediction}`;
+    // Create an ONNX Tensor from the input data
+    const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [inputData.length]);
 
-    // Change the background color based on the output value
-    const predictions = document.getElementById("predictions");
-    const boxColor = getBoxColor(prediction);
-    predictions.style.backgroundColor = boxColor;
+    // Run the ONNX model to get predictions
+    const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
+
+    // Get the prediction result
+    const predictionResult = outputTensor.getValues();
+
+    // Display the prediction result
+    document.getElementById('predictionResult').textContent = predictionResult[0].toFixed(2);
 }
 
-function getBoxColor(aqi) {
-    // Customize this logic based on your desired color assignment
-    if (aqi <= 50) {
-        return "green"; // Good
-    } else if (aqi <= 100) {
-        return "yellow"; // Moderate
-    } else if (aqi <= 150) {
-        return "orange"; // Unhealthy for sensitive groups
-    } else if (aqi <= 200) {
-        return "red"; // Unhealthy
-    } else if (aqi <= 300) {
-        return "purple"; // Very Unhealthy
-    } else {
-        return "maroon"; // Hazardous
-    }
-}
+// Replace with your actual headers
+const headersList = ['PM2.5', 'PM10', 'NO', 'NO2', 'NOx', 'NH3', 'CO', 'SO2', 'O3', 'Benzene', 'Toluene', 'Xylene', 'AQI'];
 
-// Load the model on page load
-loadModel();
+// Populate the header dropdown options
+const headerSelect = document.getElementById('headerSelect');
+headersList.forEach(header => {
+    const option = document.createElement('option');
+    option.value = header;
+    option.text = header;
+    headerSelect.appendChild(option);
+});
+
+// Initial prediction on page load
+updatePrediction();
