@@ -1,0 +1,53 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+  <script src="./index.js"></script>
+  
+  <style>
+    table, th, td {
+      border: 1px solid;
+    }
+    
+    #leftbox {
+      float: left; 
+      width: 33%;
+      height: 300px;
+    }
+    
+    #middlebox {
+      float: left; 
+      width: 33%;
+      height: 300px;
+    }
+    
+    #rightbox {
+      float: right;
+      width: 33%;
+      height: 300px;
+    }
+    
+    h1 {
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1> Air Quality XGBoost </h1>
+
+  <div id="boxes1">
+    <input type="text" id="box1" value="96.83"> Particulate Matter 2.5 (PM2.5) <br/>
+    <!-- Add the rest of your input boxes here -->
+  </div> 
+      
+  <div>
+    <input style="background-color: gray" type="button" value="Run" onclick="runExample()"/>
+  </div>
+
+  <div id="boxes2">
+    <h2> Air Quality Index (AQI) </h2>
+    <div id="predictions">
+    </div>
+  </div>
+</body>
+</html>
