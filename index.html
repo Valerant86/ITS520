@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
   <script src="./index.js"></script>
@@ -32,16 +31,10 @@
       text-align: center;
     }
 
-    #predictions {
-      background-color: lightgray; /* Default background color for predictions box */
+    #predictions, #predictedAQI {
+      margin-top: 20px;
       padding: 10px;
-      margin-top: 10px;
-    }
-
-    #predictedAQI {
-      background-color: lightgreen; /* Default background color for predicted AQI box */
-      padding: 10px;
-      margin-top: 10px;
+      border: 1px solid black;
     }
   </style>
 </head>
@@ -50,20 +43,20 @@
 
   <div id="boxes1">
     <!-- Your input boxes here -->
-  </div>
+  </div> 
       
   <div>
     <input style="background-color: blue" type="button" value="Run" onclick="runExample()"/>
   </div>
 
-  <div id="predictions">
+  <div id="boxes2">
     <h2> Air Quality Index (AQI) </h2>
-    <!-- AQI value will be displayed here -->
-  </div>
-
-  <div id="predictedAQI">
-    <h2> Predicted AQI </h2>
-    <!-- Predicted AQI value will be displayed here with background color -->
+    <div id="predictions">
+      <!-- AQI value will be displayed here -->
+    </div>
+    <div id="predictedAQI">
+      <!-- Predicted AQI value will be displayed here with background color -->
+    </div>
   </div>
 </body>
 </html>
