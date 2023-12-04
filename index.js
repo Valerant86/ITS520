@@ -1,23 +1,5 @@
 // Load ONNX runtime module
-const ort = require('onnxruntime-web');
-
-// Function to collect input values from text boxes
-function collectInputValues() {
-    const inputValues = {};
-
-    // Replace with your actual input ids
-    const inputIds = [
-        'box1', 'box2', 'box3', 'box4', 'box5', 'box6',
-        'box7', 'box8', 'box9', 'box10', 'box11', 'box12'
-    ];
-
-    inputIds.forEach(id => {
-        const inputValue = document.getElementById(id).value;
-        inputValues[id] = inputValue ? parseFloat(inputValue) : 0;
-    });
-
-    return inputValues;
-}
+const ort = require('./ort.min.js'); // Adjust the path based on your file location
 
 // Async function to initialize the model and run example
 async function initializeAndRunExample() {
@@ -31,6 +13,24 @@ async function initializeAndRunExample() {
     // Extract input and output names
     const inputName = onnxModel.inputNames[0];
     const outputName = onnxModel.outputNames[0];
+
+    // Function to collect input values from text boxes
+    function collectInputValues() {
+        const inputValues = {};
+
+        // Replace with your actual input ids
+        const inputIds = [
+            'box1', 'box2', 'box3', 'box4', 'box5', 'box6',
+            'box7', 'box8', 'box9', 'box10', 'box11', 'box12'
+        ];
+
+        inputIds.forEach(id => {
+            const inputValue = document.getElementById(id).value;
+            inputValues[id] = inputValue ? parseFloat(inputValue) : 0;
+        });
+
+        return inputValues;
+    }
 
     // Function to update predictions when the button is clicked
     window.runExample = async function () {
