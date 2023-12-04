@@ -1,20 +1,10 @@
+// predict.js
 async function predict() {
     const inputValue = parseFloat(document.getElementById("inputValue").value);
 
     // Load the ONNX model
-    const model = await onnx.load("xgboost_Classification_AirQuality_ort.onnx");
+    const model = await onnx.load('xgboost_Classification_AirQuality_ort.onnx');
     console.log('Model loaded successfully');
-
-    // ... (existing code)
-}
-
-
-
-async function predict() {
-    const inputValue = parseFloat(document.getElementById("inputValue").value);
-
-    // Load the ONNX model
-    const model = await onnx.load("xgboost_Classification_AirQuality_ort.onnx");
 
     // Create an ONNX inference session
     const session = new onnx.InferenceSession({ backendHint: "webgl" });
