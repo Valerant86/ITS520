@@ -9,10 +9,10 @@
 </head>
 <body>
     <h1>ONNX Model Prediction</h1>
-    <label for="headerSelect">Select Header:</label>
-    <select id="headerSelect" onchange="updatePrediction()">
-        <!-- Populate options dynamically using JavaScript -->
-    </select>
+    
+    <!-- Display all headers and input boxes -->
+    <div id="inputBoxes"></div>
+    
     <button onclick="updatePrediction()">Run Prediction</button>
     <p>Prediction: <span id="predictionResult"></span></p>
 
