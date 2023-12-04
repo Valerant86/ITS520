@@ -14,7 +14,7 @@ async function runExample() {
 
   // Run the model and get the result
   let result = await session.run(feeds);
-  let outputData = result.tensorMap.float_output.data; // Update this line to get the correct output
+  let outputData = result.values().next().value.data; // Update this line to get the correct output
 
   // Format the output value
   outputData = parseFloat(outputData[0]).toFixed(2);
