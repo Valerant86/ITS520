@@ -5,7 +5,9 @@ async function initializeAndRunExample() {
 
     try {
         // Load the ONNX model using onnxjs
-        const onnxModel = await onnx.loadModel(`./${onnxModelFileName}`);
+        const response = await fetch(`./${onnxModelFileName}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const onnxModel = new onnx.ModelProto(arrayBuffer);
 
         // Function to collect input values from text boxes
         function collectInputValues() {
