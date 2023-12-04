@@ -15,23 +15,29 @@ async function updatePrediction() {
     // Get the index of the selected header
     const headerIndex = headersList.indexOf(selectedHeader);
 
-    // Extract the corresponding column from the test data
-    const testDataColumn = X_test_tr[:, headerIndex];
+    // Prompt user to enter a new value for the selected header
+    const newValue = prompt(`Enter a new value for ${selectedHeader}:`);
 
-    // Prepare the input data for ONNX model
-    const inputData = new Float32Array(testDataColumn.data);
+    // Make sure the entered value is not null
+    if (newValue !== null) {
+        // Update the corresponding column in the test data
+        X_test_tr[:, headerIndex].fill(parseFloat(newValue));
 
-    // Create an ONNX Tensor from the input data
-    const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [inputData.length]);
+        // Prepare the input data for ONNX model
+        const inputData = new Float32Array(X_test_tr.data);
 
-    // Run the ONNX model to get predictions
-    const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
+        // Create an ONNX Tensor from the input data
+        const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [X_test_tr.shape[0], X_test_tr.shape[1]]);
 
-    // Get the prediction result
-    const predictionResult = outputTensor.getValues();
+        // Run the ONNX model to get predictions
+        const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
 
-    // Display the prediction result
-    document.getElementById('predictionResult').textContent = predictionResult[0].toFixed(2);
+        // Get the prediction result
+        const predictionResult = outputTensor.getValues();
+
+        // Display the prediction result
+        document.getElementById('predictionResult').textContent = predictionResult[0].toFixed(2);
+    }
 }
 
 // Replace with your actual headers
