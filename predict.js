@@ -1,56 +1,65 @@
 // Load ONNX runtime module
 const ort = require('onnxruntime-web');
 
+// Function to create input boxes for each header
+function createInputBoxes() {
+    const inputBoxesDiv = document.getElementById('inputBoxes');
+
+    headersList.forEach(header => {
+        const label = document.createElement('label');
+        label.textContent = `${header}:`;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = header;
+
+        inputBoxesDiv.appendChild(label);
+        inputBoxesDiv.appendChild(input);
+    });
+}
+
 // Function to update predictions when the header is changed
 async function updatePrediction() {
-    // Get the selected header value
-    const selectedHeader = document.getElementById('headerSelect').value;
+    const inputValues = {};
 
-    // Make sure the selected header is valid
-    if (!selectedHeader) {
-        alert('Please select a valid header.');
-        return;
-    }
+    // Collect values from input boxes
+    headersList.forEach(header => {
+        const inputValue = document.getElementById(header).value;
+        inputValues[header] = inputValue ? parseFloat(inputValue) : 0;
+    });
 
-    // Get the index of the selected header
-    const headerIndex = headersList.indexOf(selectedHeader);
+    // Prepare the input data for ONNX model
+    const inputData = new Float32Array(headersList.map(header => inputValues[header]));
 
-    // Prompt user to enter a new value for the selected header
-    const newValue = prompt(`Enter a new value for ${selectedHeader}:`);
+    // Create an ONNX Tensor from the input data
+    const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [1, headersList.length]);
 
-    // Make sure the entered value is not null
-    if (newValue !== null) {
-        // Update the corresponding column in the test data
-        X_test_tr[:, headerIndex].fill(parseFloat(newValue));
+    // Run the ONNX model to get predictions
+    const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
 
-        // Prepare the input data for ONNX model
-        const inputData = new Float32Array(X_test_tr.data);
+    // Get the prediction result
+    const predictionResult = outputTensor.getValues();
 
-        // Create an ONNX Tensor from the input data
-        const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [X_test_tr.shape[0], X_test_tr.shape[1]]);
-
-        // Run the ONNX model to get predictions
-        const outputTensor = await session.run([labelName], { [inputName]: inputTensor });
-
-        // Get the prediction result
-        const predictionResult = outputTensor.getValues();
-
-        // Display the prediction result
-        document.getElementById('predictionResult').textContent = predictionResult[0].toFixed(2);
-    }
+    // Display the prediction result
+    document.getElementById('predictionResult').textContent = predictionResult[0].toFixed(2);
 }
 
 // Replace with your actual headers
 const headersList = ['PM2.5', 'PM10', 'NO', 'NO2', 'NOx', 'NH3', 'CO', 'SO2', 'O3', 'Benzene', 'Toluene', 'Xylene', 'AQI'];
 
-// Populate the header dropdown options
-const headerSelect = document.getElementById('headerSelect');
-headersList.forEach(header => {
-    const option = document.createElement('option');
-    option.value = header;
-    option.text = header;
-    headerSelect.appendChild(option);
-});
+// Populate the header input boxes
+createInputBoxes();
 
 // Initial prediction on page load
 updatePrediction();
+
+// ONNX model file name
+const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
+
+// Load the ONNX model
+const onnxModel = await ort.InferenceSession.create({ backendHint: 'webgl' });
+await onnxModel.loadModel(`./${onnxModelFileName}`);
+
+// Extract input and output names
+const inputName = onnxModel.inputNames[0];
+const labelName = onnxModel.outputNames[0];
