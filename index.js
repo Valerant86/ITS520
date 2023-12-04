@@ -56,4 +56,3 @@ async function initializeAndRunExample() {
 
 // Call the initialization function
 initializeAndRunExample();
-
