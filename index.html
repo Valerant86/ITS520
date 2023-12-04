@@ -1,71 +1,21 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
-  <script src="./index.js"></script>
-  
-  <style>
-    table, th, td {
-      border: 1px solid;
-    }
-    
-    #leftbox {
-      float: left; 
-      width: 33%;
-      height: 300px;
-    }
-    
-    #middlebox {
-      float: left; 
-      width: 33%;
-      height: 300px;
-    }
-    
-    #rightbox {
-      float: right;
-      width: 33%;
-      height: 300px;
-    }
-    
-    h1 {
-      color: green;
-      text-align: center;
-    }
-
-    #predictions, #predictedAQI {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid black;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONNX Model Prediction</title>
+    <!-- Add the script tag for ONNX runtime module -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.7.0/dist/ort.min.js"></script>
 </head>
 <body>
-  <h1> Air Quality XGBoost </h1>
+    <h1>ONNX Model Prediction</h1>
+    <label for="headerSelect">Select Header:</label>
+    <select id="headerSelect" onchange="updatePrediction()">
+        <!-- Populate options dynamically using JavaScript -->
+    </select>
+    <p>Prediction: <span id="predictionResult"></span></p>
 
-  <div>
-    <label for="headers">Enter Headers (comma-separated):</label>
-    <input type="text" id="headers" placeholder="header1,header2,header3,...">
-  </div>
-
-  <div id="boxes1">
-    <!-- Input boxes will be dynamically generated using JavaScript -->
-  </div> 
-      
-  <div>
-    <input style="background-color: blue" type="button" value="Run" onclick="runExample()"/>
-  </div>
-
-  <div id="boxes2">
-    <h2> Air Quality Index (AQI) </h2>
-    <div id="predictions">
-      <!-- AQI value will be displayed here -->
-    </div>
-    <div id="predictedAQI">
-      <!-- Predicted AQI value will be displayed here with background color -->
-    </div>
-  </div>
-
-  <script>
-    // You can include your JavaScript code here
-  </script>
+    <!-- Add your custom JavaScript file -->
+    <script src="predict.js"></script>
 </body>
 </html>
