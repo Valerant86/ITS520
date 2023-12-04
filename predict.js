@@ -18,7 +18,7 @@ function createInputBoxes() {
     });
 }
 
-// Function to update predictions when the header is changed
+// Function to update predictions when the button is clicked
 async function updatePrediction() {
     const inputValues = {};
 
@@ -45,13 +45,10 @@ async function updatePrediction() {
 }
 
 // Replace with your actual headers
-const headersList = ['PM2.5', 'PM10', 'NO', 'NO2', 'NOx', 'NH3', 'CO', 'SO2', 'O3', 'Benzene', 'Toluene', 'Xylene', 'AQI'];
+const headersList = ['PM2.5', 'PM10', 'NO', 'NO2', 'NOx', 'NH3', 'CO', 'SO2', 'O3', 'Benzene', 'Toluene', 'Xylene'];
 
 // Populate the header input boxes
 createInputBoxes();
-
-// Initial prediction on page load
-updatePrediction();
 
 // ONNX model file name
 const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
