@@ -1,57 +1,48 @@
+// Load ONNX runtime module
+const ort = require('onnxruntime-web');
+
+// Function to collect input values from text boxes
+function collectInputValues() {
+    const inputValues = {};
+
+    // Replace with your actual input ids
+    const inputIds = [
+        'box1', 'box2', 'box3', 'box4', 'box5', 'box6',
+        'box7', 'box8', 'box9', 'box10', 'box11', 'box12'
+    ];
+
+    inputIds.forEach(id => {
+        const inputValue = document.getElementById(id).value;
+        inputValues[id] = inputValue ? parseFloat(inputValue) : 0;
+    });
+
+    return inputValues;
+}
+
+// Function to update predictions when the button is clicked
 async function runExample() {
-  // Fetch values from input boxes
-  var x = new Float32Array(12);
-  for (let i = 1; i <= 12; i++) {
-    x[i - 1] = parseFloat(document.getElementById(`box${i}`).value);
-  }
+    // Collect input values from text boxes
+    const inputValues = collectInputValues();
 
-  // Create the input tensor
-  let tensorX = new ort.Tensor('float32', x, [1, 12]);
-  let feeds = { float_input: tensorX };
+    // Prepare the input data for ONNX model
+    const inputData = new Float32Array(Object.values(inputValues));
 
-  // Load the ONNX model
-  let session = await ort.InferenceSession.create('xgboost_AirQuality_ort.onnx');
+    // Create an ONNX Tensor from the input data
+    const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [1, Object.keys(inputValues).length]);
 
-  // Run the model and get the result
-  let result = await session.run(feeds);
-  let outputData = result.values().next().value.data; // Update this line to get the correct output
+    // Run the ONNX model to get predictions
+    const outputTensor = await onnxModel.run(['output'], { input: inputTensor });
 
-  // Format the output value
-  outputData = parseFloat(outputData[0]).toFixed(2);
+    // Get the prediction result
+    const predictionResult = outputTensor.getValues();
 
-  // Change the background color based on the output value for predictions box
-  var boxColor = getBoxColor(outputData);
-
-  // Display the output value in the predictions box
-  let predictions = document.getElementById('predictions');
-  predictions.innerHTML = ` <hr> Got an output tensor with values: <br/>
-    <table>
-      <tr>
-        <td>  Rating of Air Quality  </td>
-        <td id="td0">  ${outputData}  </td>
-      </tr>
-    </table>`;
-  predictions.style.backgroundColor = boxColor;
-
-  // Display the predicted AQI in a separate box with background color
-  let predictedAQI = document.getElementById('predictedAQI');
-  predictedAQI.innerHTML = ` <hr> Predicted AQI: ${outputData} </hr>`;
-  predictedAQI.style.backgroundColor = boxColor;
+    // Display the prediction result
+    document.getElementById('predictions').textContent = `Predicted AQI: ${predictionResult[0].toFixed(2)}`;
 }
 
-function getBoxColor(aqiValue) {
-  // Define color ranges based on AQI values
-  if (aqiValue < 50) {
-    return 'lightgreen'; // Good
-  } else if (aqiValue < 100) {
-    return 'yellow'; // Moderate
-  } else if (aqiValue < 150) {
-    return 'orange'; // Unhealthy for Sensitive Groups
-  } else if (aqiValue < 200) {
-    return 'red'; // Unhealthy
-  } else if (aqiValue < 300) {
-    return 'purple'; // Very Unhealthy
-  } else {
-    return 'brown'; // Hazardous
-  }
-}
+// ONNX model file name
+const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
+
+// Load the ONNX model
+const onnxModel = await ort.InferenceSession.create({ backendHint: 'webgl' });
+await onnxModel.loadModel(`./${onnxModelFileName}`);
