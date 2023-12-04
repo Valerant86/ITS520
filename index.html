@@ -3,21 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ONNX Model Prediction</title>
-    <!-- Add the script tag for ONNX runtime module -->
+    <title>Air Quality XGBoost</title>
+    <!-- Add the script tags for ONNX runtime module and your custom JavaScript file -->
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.7.0/dist/ort.min.js"></script>
+    <script src="./index.js"></script>
+
+    <style>
+        table, th, td {
+            border: 1px solid;
+        }
+
+        #leftbox {
+            float: left;
+            width: 33%;
+            height: 300px;
+        }
+
+        #middlebox {
+            float: left;
+            width: 33%;
+            height: 300px;
+        }
+
+        #rightbox {
+            float: right;
+            width: 33%;
+            height: 300px;
+        }
+
+        h1 {
+            color: green;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>ONNX Model Prediction</h1>
-    
-    <!-- Display all headers and input boxes -->
-    <div id="inputBoxes"></div>
-    
-    <button onclick="updatePrediction()">Run Prediction</button>
-    <p>AQI Prediction: <span id="predictionResult"></span></p>
-    <p id="modelStatus">Model Loaded: <span id="modelLoaded">No</span></p>
 
-    <!-- Add your custom JavaScript file -->
-    <script src="predict.js"></script>
+<h1>Air Quality XGBoost</h1>
+
+<div id="boxes1">
+
+    <input type="text" id="box1" value="96.83"> Particulate Matter 2.5 (PM2.5) <br/>
+    <input type="text" id="box2" value="139.36"> Particulate Matter 10 (PM10) <br/>
+    <input type="text" id="box3" value="1.6"> Nitrogen Monoxide (NO) <br/>
+    <input type="text" id="box4" value="25.65"> Nitrogen Dioxide (NO2) <br/>
+    <input type="text" id="box5" value="14.99"> Nitrogen X (NOx) <br/>
+    <input type="text" id="box6" value="15.12"> Ammonia (NH3) <br/>
+    <input type="text" id="box7" value="0.11"> Carbon Monoxide (CO) <br/>
+    <input type="text" id="box8" value="16.54"> Sulfur Dioxide (SO2) <br/>
+    <input type="text" id="box9" value="117.21"> Ground-Level Ozone (O3) <br/>
+    <input type="text" id="box10" value="0.29"> Benzene <br/>
+    <input type="text" id="box11" value="4.45"> Toluene <br/>
+    <input type="text" id="box12" value="0.07"> Xylene <br/>
+
+</div>
+
+<div>
+    <input style="background-color: blue" type="button" value="Run" onclick="runExample()"/>
+</div>
+
+<div id="boxes2">
+
+    <h2>Air Quality Index (AQI)</h2>
+
+    <div id="predictions">
+        <!-- Display predicted AQI result here -->
+    </div>
+
+</div>
+
 </body>
 </html>
