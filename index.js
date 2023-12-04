@@ -35,28 +35,4 @@ async function initializeAndRunExample() {
             const inputData = new Float32Array(Object.values(inputValues));
 
             // Create an ONNX Tensor from the input data
-            const inputTensor = new onnx.Tensor(inputData, 'float32', [1, Object.keys(inputValues).length]);
-
-            // Run the ONNX model to get predictions
-            const outputMap = await onnxModel.run([inputTensor]);
-
-            // Get the prediction result
-            const predictionResult = outputMap.values().next().value.data;
-
-            // Display the prediction result
-            const predictionsDiv = document.getElementById('predictions');
-            predictionsDiv.textContent = `Predicted AQI: ${predictionResult[0].toFixed(2)}`;
-        };
-
-        // Update the model status on the HTML page
-        const modelLoadedDiv = document.getElementById('modelLoaded');
-        modelLoadedDiv.textContent = 'Yes';
-    } catch (error) {
-        console.error('Error loading the ONNX model:', error);
-        const modelLoadedDiv = document.getElementById('modelLoaded');
-        modelLoadedDiv.textContent = 'No';
-    }
-}
-
-// Call the initialization function
-initializeAndRunExample();
+            const inputTensor = new onnx.Tensor(inputData, 'float32', [1, Object.keys(inputValues).leng
