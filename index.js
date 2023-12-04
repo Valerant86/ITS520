@@ -19,6 +19,9 @@ async function runExample() {
   // Format the output value
   outputData = parseFloat(outputData[0]).toFixed(2);
 
+  // Change the background color based on the output value for predictions box
+  var boxColor = getBoxColor(outputData);
+
   // Display the output value in the predictions box
   let predictions = document.getElementById('predictions');
   predictions.innerHTML = ` <hr> Got an output tensor with values: <br/>
@@ -28,13 +31,27 @@ async function runExample() {
         <td id="td0">  ${outputData}  </td>
       </tr>
     </table>`;
-
-  // Change the background color based on the output value for predictions box
-  var boxColor = getBoxColor(outputData);
   predictions.style.backgroundColor = boxColor;
 
   // Display the predicted AQI in a separate box with background color
   let predictedAQI = document.getElementById('predictedAQI');
   predictedAQI.innerHTML = ` <hr> Predicted AQI: ${outputData} </hr>`;
   predictedAQI.style.backgroundColor = boxColor;
+}
+
+function getBoxColor(aqiValue) {
+  // Define color ranges based on AQI values
+  if (aqiValue < 50) {
+    return 'lightgreen'; // Good
+  } else if (aqiValue < 100) {
+    return 'yellow'; // Moderate
+  } else if (aqiValue < 150) {
+    return 'orange'; // Unhealthy for Sensitive Groups
+  } else if (aqiValue < 200) {
+    return 'red'; // Unhealthy
+  } else if (aqiValue < 300) {
+    return 'purple'; // Very Unhealthy
+  } else {
+    return 'brown'; // Hazardous
+  }
 }
