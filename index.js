@@ -45,3 +45,4 @@ function getBoxColor(aqi) {
         return "maroon"; // Hazardous
     }
 }
+
