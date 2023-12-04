@@ -4,14 +4,8 @@ async function initializeAndRunExample() {
     const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
 
     try {
-        // Load the ONNX model using fetch and ArrayBuffer
-        const response = await fetch(onnxModelFileName);
-        const buffer = await response.arrayBuffer();
-        const onnxModel = await ort.InferenceSession.create(buffer);
-
-        // Extract input and output names
-        const inputName = onnxModel.inputNames[0];
-        const outputName = onnxModel.outputNames[0];
+        // Load the ONNX model using onnxjs
+        const onnxModel = await onnx.loadModel(`./${onnxModelFileName}`);
 
         // Function to collect input values from text boxes
         function collectInputValues() {
@@ -39,13 +33,13 @@ async function initializeAndRunExample() {
             const inputData = new Float32Array(Object.values(inputValues));
 
             // Create an ONNX Tensor from the input data
-            const inputTensor = new ort.Tensor(ort.WebGLFloat32, new Float32Array(inputData), [1, Object.keys(inputValues).length]);
+            const inputTensor = new onnx.Tensor(inputData, 'float32', [1, Object.keys(inputValues).length]);
 
             // Run the ONNX model to get predictions
-            const outputTensor = await onnxModel.run([outputName], { [inputName]: inputTensor });
+            const outputMap = await onnxModel.run([inputTensor]);
 
             // Get the prediction result
-            const predictionResult = outputTensor.getValues();
+            const predictionResult = outputMap.values().next().value.data;
 
             // Display the prediction result
             const predictionsDiv = document.getElementById('predictions');
