@@ -4,13 +4,9 @@ async function initializeAndRunExample() {
     const onnxModelFileName = 'xgboost_AirQuality_ort.onnx';
 
     try {
-        // Fetch the ONNX model file as an array buffer
-        const response = await fetch(`./${onnxModelFileName}`);
-        const buffer = await response.arrayBuffer();
-
-        // Load the ONNX model using the array buffer
+        // Load the ONNX model using a URL
         const onnxModel = await ort.InferenceSession.create({ backendHint: 'webgl' });
-        await onnxModel.loadModel(buffer);
+        await onnxModel.loadModel(`./${onnxModelFileName}`);
 
         // Extract input and output names
         const inputName = onnxModel.inputNames[0];
