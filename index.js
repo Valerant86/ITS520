@@ -1,6 +1,3 @@
-// Load ONNX runtime module
-const ort = require('https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js'); // Use the CDN link
-
 // Async function to initialize the model and run example
 async function initializeAndRunExample() {
     // ONNX model file name
