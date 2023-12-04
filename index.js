@@ -1,5 +1,5 @@
 // Load ONNX runtime module
-const ort = require('./ort.min.js'); // Adjust the path based on your file location
+const ort = require('https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js'); // Use the CDN link
 
 // Async function to initialize the model and run example
 async function initializeAndRunExample() {
