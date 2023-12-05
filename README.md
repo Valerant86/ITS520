@@ -1,1 +1,1 @@
-## Deployed Models for Air Quality Data
+## Deployed Regression Models: Calculating Air Quality Index
