@@ -1,0 +1,236 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+  <script src="./combined.js"></script>
+  
+   <style>
+    table, th, td {
+      border: 1px solid;
+    }
+
+    #leftbox {
+      float: left;
+      width: 33%;
+      height: 300px;
+    }
+
+    #middlebox {
+      float: left;
+      width: 33%;
+      height: 300px;
+    }
+
+    #rightbox {
+      float: right;
+      width: 33%;
+      height: 300px;
+    }
+
+    h2 {
+      color: black;
+      text-align: Center;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h2> Air Quality Index Calculator </h2>
+
+  <div id="page1">
+    <h4> Air Quality Index </h4>
+    <div id="boxes1">
+      <input type="text" id="box1" value="96.83"> Particulate Matter 2.5 (PM2.5) <br/>
+      <input type="text" id="box2" value="139.36"> articulate Matter 10 (PM10) <br/>
+      <input type="text" id="box3" value="1.6"> Nitrogen Monoxide (NO)  <br/>
+      <input type="text" id="box4" value="25.65"> Nitrogen Dioxide (NO2) <br/>
+      <input type="text" id="box5" value="14.99" > Nitrogen X (NOx) <br/>
+      <input type="text" id="box6" value="15.12"> Ammonia (NH3) <br/>
+      <input type="text" id="box7" value="0.11"> Carbon Monoxide (CO) <br/>
+      <input type="text" id="box8" value="16.54"> Sulfur Dioxide (SO2) <br/>
+      <input type="text" id="box9" value="117.21"> Ground-Level Ozone (O3) <br/>
+      <input type="text" id="box10" value="0.29" > Benzene <br/>
+      <input type="text" id="box11" value="4.45"> Toluene <br/>
+      <input type="text" id="box12" value="0.07"> Xylene <br/>
+    </div>
+    <div>
+      <input type="button" value="Calculate" onclick="runExample1()"/>
+    </div>
+    
+    <div id="predictions1">
+    </div>
+  </div>
+
+  <hr>
+
+  <h4> Level of Concern </h4>
+  <div id="page2">
+    <div id="boxes2">
+      <input type="text" id="box1_page2" value=""> AQI value <br/>
+    </div>
+
+    <div>
+      <input type="button" value="Calculate" onclick="runExample2()"/>
+    </div>
+    <div id="predictions2"> 
+    </div>
+  </div>
+
+  <script>
+    async function runExample1() {
+      var x = new Float32Array(12);
+
+      x[0] = parseFloat(document.getElementById('box1').value);
+      x[1] = parseFloat(document.getElementById('box2').value);
+      x[2] = parseFloat(document.getElementById('box3').value);
+      x[3] = parseFloat(document.getElementById('box4').value);
+      x[4] = parseFloat(document.getElementById('box5').value);
+      x[5] = parseFloat(document.getElementById('box6').value);
+      x[6] = parseFloat(document.getElementById('box7').value);
+      x[7] = parseFloat(document.getElementById('box8').value);
+      x[8] = parseFloat(document.getElementById('box9').value);
+      x[9] = parseFloat(document.getElementById('box10').value);
+      x[10] = parseFloat(document.getElementById('box11').value);
+      x[11] = parseFloat(document.getElementById('box12').value);
+
+      let tensorX = new ort.Tensor('float32', x, [1, 12]);
+      let feeds = { float_input: tensorX };
+
+      let session = await ort.InferenceSession.create('AirQuality_ort_prediction1.onnx');
+      let result = await session.run(feeds);
+      let outputData = parseFloat(result.variable.data).toFixed(2);
+
+      // Show the predicted AQI on the first page
+      let predictions1 = document.getElementById('predictions1');
+      predictions1.innerHTML = `
+        <table style="border-collapse: collapse; border: none;">
+          <tr>
+            <td> Air Quality Index : </td>
+            <td id="td0"> ${outputData} </td>
+          </tr>
+        </table>`;
+
+      // Automatically populate input on page 2 with predicted AQI from page 1
+      document.getElementById('box1_page2').value = outputData;
+    }
+
+    
+async function runExample2() {
+  var x = new Float32Array(1);
+  x[0] = parseFloat(document.getElementById('box1_page2').value);
+
+  let tensorX = new ort.Tensor('float32', x, [1, 1]);
+  let feeds = { float_input: tensorX };
+
+  let session = await ort.InferenceSession.create('AirQuality_ort_prediction2.onnx');
+  let result = await session.run(feeds);
+  let outputData2 = parseFloat(result.variable.data).toFixed(2);
+
+  // Convert to integer for switch case
+  let predictionInteger = Math.round(outputData2);
+
+  // Map the predicted number to the corresponding word
+  let predictionWord = mapPredictionToWord(predictionInteger);
+     
+ // Create the td1 element dynamically
+  let td1Element = document.createElement('td');
+  td1Element.id = 'td1';
+
+  // Update the second predicted value section with the latest prediction in words
+  predictions2.innerHTML = `
+      <table style="border-collapse: collapse; border: none;">
+        <tr>
+           <td> Air Quality : </td>
+           <td id="td1"> ${predictionWord} </td>
+        </tr>
+      </table>`;
+  
+
+  
+  // Get the existing table element within the predictions2 div
+let table = predictions2.querySelector('table');
+
+// Create a new table row element
+let tr = document.createElement('tr');
+
+// Create a new td element for the first column (td0)
+let td0 = document.createElement('td');
+//  td0.textContent = "*"; // Set the content of the first column
+
+// Create a new td element for the second column (td1)
+let td1 = document.createElement('td');
+ // td1.textContent = predictionWord; // Set the content of the second column
+
+// Set background color for the first column based on outputData2
+switch (predictionInteger) {
+  case 0:
+    td0.style.backgroundColor = 'green';
+    break;
+  case 1:
+    td0.style.backgroundColor = 'yellow';
+    break;
+  case 2:
+    td0.style.backgroundColor = 'orange';
+    break;
+  case 3:
+    td0.style.backgroundColor = 'red';
+    break;
+  case 4:
+    td0.style.backgroundColor = 'purple';
+    break;
+  case 5:
+    td0.style.backgroundColor = 'maroon';
+    break;
+  default:
+    td0.style.backgroundColor = 'white'; // Set a default color if prediction is unknown
+}
+
+// Set background color for the second column based on outputData2
+switch (predictionInteger) {
+  case 0:
+    td1.style.backgroundColor = 'green';
+    break;
+  case 1:
+    td1.style.backgroundColor = 'yellow';
+    break;
+  case 2:
+    td1.style.backgroundColor = 'orange';
+    break;
+  case 3:
+    td1.style.backgroundColor = 'red';
+    break;
+  case 4:
+    td1.style.backgroundColor = 'purple';
+    break;
+  case 5:
+    td1.style.backgroundColor = 'maroon';
+    break;
+  default:
+    td1.style.backgroundColor = 'white'; // Set a default color if prediction is unknown
+}
+
+// Append the td elements to the new table row
+tr.appendChild(td0);
+tr.appendChild(td1);
+
+// Append the new table row to the existing table
+table.appendChild(tr);
+
+}
+
+function mapPredictionToWord(prediction) {
+  const mapping = {
+    0: 'Good',
+    1: 'Satisfactory',
+    2: 'Moderate',
+    3: 'Poor',
+    4: 'Very Poor',
+    5: 'Severe'
+  };
+
+  return mapping.hasOwnProperty(prediction) ? mapping[prediction] : 'Unknown';
+}
+
+  </script>
+</body>
+</html>
